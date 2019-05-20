@@ -7,13 +7,13 @@
       <b-collapse id="nav-collapse" is-nav>
         <b-navbar-nav class="ml-auto">
           <b-nav-form>
-            <b-button size="sm" class="my-2 my-sm-0" type="submit">Authorize</b-button>
+            <b-button size="sm" class="my-2 my-sm-0" type="submit">{{ $t("authorize") }}</b-button>
           </b-nav-form>
 
           <b-nav-item-dropdown text="Lang" right>
-            <b-dropdown-item @click="language = 'pl'">PL</b-dropdown-item>
-            <b-dropdown-item @click="language = 'en'">EN</b-dropdown-item>
-            <b-dropdown-item @click="language = 'de'">DE</b-dropdown-item>
+            <b-dropdown-item @click="$i18n.locale = 'pl'">PL</b-dropdown-item>
+            <b-dropdown-item @click="$i18n.locale = 'en'">EN</b-dropdown-item>
+            <b-dropdown-item @click="$i18n.locale = 'de'">DE</b-dropdown-item>
           </b-nav-item-dropdown>
 
           <b-nav-item-dropdown right>
@@ -26,7 +26,7 @@
       </b-collapse>
     </b-navbar>
     <vue-cal
-      :locale="language"
+      :locale="$i18n.locale"
       class="vuecal--green-theme"
       style="height: 450px"
     ></vue-cal>
