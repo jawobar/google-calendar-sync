@@ -1,15 +1,18 @@
 <template>
   <div id="app">
+    <navbar></navbar>
     <calendar></calendar>
   </div>
 </template>
 
 <script>
+import TheNavbar from "./components/TheNavbar";
 import TheCalendar from "./components/TheCalendar";
 
 export default {
   name: 'app',
   components: {
+    navbar: TheNavbar,
     calendar: TheCalendar
   }
 }
