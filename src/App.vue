@@ -1,7 +1,7 @@
 <template>
   <div id="app">
-    <navbar></navbar>
-    <calendar></calendar>
+    <navbar @eventsLoaded="calendarEvents = $event"></navbar>
+    <calendar :events="calendarEvents"></calendar>
   </div>
 </template>
 
@@ -11,6 +11,9 @@ import TheCalendar from "./components/TheCalendar";
 
 export default {
   name: 'app',
+  data: () => ({
+    calendarEvents: []
+  }),
   components: {
     navbar: TheNavbar,
     calendar: TheCalendar

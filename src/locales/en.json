@@ -1,3 +1,4 @@
 {
-  "authorize": "Authorize"
+  "signedIn": "Sign In",
+  "signedOut": "Sign Out"
 }
