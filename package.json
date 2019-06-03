@@ -15,8 +15,8 @@
     "moment": "^2.24.0",
     "vue": "^2.6.10",
     "vue-cal": "^1.58.0",
-    "vue-google-api": "^0.2.0",
-    "vue-i18n": "^8.0.0"
+    "vue-i18n": "^8.0.0",
+    "vuex": "^3.1.1"
   },
   "devDependencies": {
     "@kazupon/vue-i18n-loader": "^0.3.0",
