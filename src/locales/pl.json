@@ -1,4 +1,4 @@
 {
-  "signedIn": "Wyloguj",
-  "signedOut": "Zaloguj"
+  "signIn": "Zaloguj",
+  "signOut": "Wyloguj"
 }

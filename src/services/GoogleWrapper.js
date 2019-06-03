@@ -120,7 +120,6 @@ export default class GoogleWrapper {
     static convertEvents(eventsLoaded) {
         const events = [];
 
-        console.log(eventsLoaded);
         if (eventsLoaded.length > 0) {
 
             for (var i = 0; i < eventsLoaded.length; i++) {

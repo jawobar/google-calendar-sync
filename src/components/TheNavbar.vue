@@ -33,7 +33,7 @@
                 return this.$store.state.userProfile != null;
             },
             signingLabel() {
-                return this.signedIn ? this.$t("signedIn") : this.$t("signedOut");
+                return this.signedIn ? this.$t("signOut") : this.$t("signIn");
             }
         },
         methods: {
