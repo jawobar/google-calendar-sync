@@ -25,25 +25,19 @@ export const store = new Vuex.Store({
         }
     },
     actions: {
-        signIn: ({ commit, dispatch }) => {
-            gapi.signIn()
-                .then(userProfile => {
-                    commit("setUserProfile", userProfile);
-                    dispatch("fetchCalendarEvents");
-                });
+        async signIn({ commit, dispatch }) {
+            let userProfile = await gapi.signIn();
+            commit("setUserProfile", userProfile);
+            dispatch("fetchCalendarEvents");
         },
-        signOut: ({ commit }) => {
-            gapi.signOut()
-                .then(() => {
-                    commit("setUserProfile", null);
-                    commit("setCalendarEvents", []);
-                });
+        async signOut({ commit }) {
+            await gapi.signOut();
+            commit("setUserProfile", null);
+            commit("setCalendarEvents", []);
         },
-        fetchCalendarEvents: ({ commit }) => {
-            gapi.loadPrimaryCalendarEvents()
-                .then(events => {
-                    commit("setCalendarEvents", GoogleWrapper.convertEvents(events.result.items));
-                });
+        async fetchCalendarEvents({ commit }) {
+            let events = await gapi.loadPrimaryCalendarEvents();
+            commit("setCalendarEvents", GoogleWrapper.convertEvents(events.result.items));
         }
     }
 });

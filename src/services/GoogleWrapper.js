@@ -13,9 +13,9 @@ export default class GoogleWrapper {
         this.config = config;
     }
 
-    [_loadScript]() {
+    async [_loadScript]() {
         if (window.gapi) {
-            return Promise.resolve(window.gapi);
+            return window.gapi;
         }
 
         return new Promise((resolve, reject) => {
@@ -41,62 +41,56 @@ export default class GoogleWrapper {
         });
     }
 
-    [_loadLibrary](lib) {
-        return this[_loadScript]()
-            .then(gapi => {
-                if (gapi[lib]) {
-                    return Promise.resolve(gapi[lib]);
-                }
-                return new Promise((resolve, reject) => {
-                    gapi.load(lib, {
-                        timeout: this.#timeout,
-                        callback: () => resolve(gapi[lib]),
-                        ontimeout: () => reject(new Error(`Loading ${lib} timed out`)),
-                        onerror: err => reject(new Error(`Loading ${lib} error: ${err.message}`))
-                    });
-                });
-            })
-    }
+    async [_loadLibrary](lib) {
+        let gapi = await this[_loadScript]();
 
-    [_initLibrary](lib) {
-        return this[_loadLibrary](lib)
-            .then(library => {
-                return library.init(this.config)
-                    .then(response => {
-                        return Promise.resolve(lib === "auth2" ? response : library);
-                    }, () => {
-                        return Promise.reject(new Error(`Initialization of ${lib} failed`));
-                    })
-            })
-    }
+        if (gapi[lib]) {
+            return gapi[lib];
+        }
 
-    signIn() {
-        return this[_initLibrary]("auth2")
-            .then(auth => {
-                if (auth.isSignedIn.get()) {
-                    return Promise.resolve(auth.currentUser.get().getBasicProfile());
-                } else {
-                    return auth.signIn()
-                        .then(user => {
-                            return Promise.resolve(user.getBasicProfile());
-                        });
-                }
+        return new Promise((resolve, reject) => {
+            gapi.load(lib, {
+                timeout: this.#timeout,
+                callback: () => resolve(gapi[lib]),
+                ontimeout: () => reject(new Error(`Loading ${lib} timed out`)),
+                onerror: err => reject(new Error(`Loading ${lib} error: ${err.message}`))
             });
+        });
     }
 
-    signOut() {
-        return this[_initLibrary]("auth2")
-            .then(auth => {
-                if (auth.isSignedIn.get()) {
-                    auth.disconnect()
-                }
-                return Promise.resolve();
-            });
+    async [_initLibrary](lib) {
+        let library = await this[_loadLibrary](lib);
+
+        try {
+            let response = await library.init(this.config);
+            return lib === "auth2" ? response : library;
+        } catch {
+            throw new Error(`Initialization of ${lib} failed`);
+        }
     }
 
-    request(args) {
-        return this[_initLibrary]("client")
-            .then(client => client.request(args));
+    async signIn() {
+        let auth = await this[_initLibrary]("auth2");
+
+        if (auth.isSignedIn.get()) {
+            return auth.currentUser.get().getBasicProfile();
+        } else {
+            let user = await auth.signIn();
+            return user.getBasicProfile();
+        }
+    }
+
+    async signOut() {
+        let auth = await this[_initLibrary]("auth2");
+
+        if (auth.isSignedIn.get()) {
+            auth.disconnect();
+        }
+    }
+
+    async request(args) {
+        let client = await this[_initLibrary]("client");
+        return client.request(args);
     }
 
     loadCalendarEvents(calendar) {
