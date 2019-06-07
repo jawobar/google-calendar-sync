@@ -13,6 +13,48 @@ export default class GoogleWrapper {
         this.config = config;
     }
 
+    async signIn() {
+        let auth = await this[_initLibrary]("auth2");
+
+        if (auth.isSignedIn.get()) {
+            return auth.currentUser.get().getBasicProfile();
+        } else {
+            let user = await auth.signIn();
+            return user.getBasicProfile();
+        }
+    }
+
+    async signOut() {
+        let auth = await this[_initLibrary]("auth2");
+
+        if (auth.isSignedIn.get()) {
+            auth.disconnect();
+        }
+    }
+
+    async request(args) {
+        let client = await this[_initLibrary]("client");
+        return client.request(args);
+    }
+
+    loadCalendarEvents(calendar) {
+        return this.request({
+            path: `https://www.googleapis.com/calendar/v3/calendars/${calendar}/events`,
+            method: "GET",
+            params: {
+                "timeMin": (new Date()).toISOString(),
+                "showDeleted": false,
+                "singleEvents": true,
+                "maxResults": 10,
+                "orderBy": "startTime"
+            }
+        });
+    }
+
+    loadPrimaryCalendarEvents() {
+        return this.loadCalendarEvents("primary");
+    }
+
     async [_loadScript]() {
         if (window.gapi) {
             return window.gapi;
@@ -67,48 +109,6 @@ export default class GoogleWrapper {
         } catch {
             throw new Error(`Initialization of ${lib} failed`);
         }
-    }
-
-    async signIn() {
-        let auth = await this[_initLibrary]("auth2");
-
-        if (auth.isSignedIn.get()) {
-            return auth.currentUser.get().getBasicProfile();
-        } else {
-            let user = await auth.signIn();
-            return user.getBasicProfile();
-        }
-    }
-
-    async signOut() {
-        let auth = await this[_initLibrary]("auth2");
-
-        if (auth.isSignedIn.get()) {
-            auth.disconnect();
-        }
-    }
-
-    async request(args) {
-        let client = await this[_initLibrary]("client");
-        return client.request(args);
-    }
-
-    loadCalendarEvents(calendar) {
-        return this.request({
-            path: `https://www.googleapis.com/calendar/v3/calendars/${calendar}/events`,
-            method: "GET",
-            params: {
-                "timeMin": (new Date()).toISOString(),
-                "showDeleted": false,
-                "singleEvents": true,
-                "maxResults": 10,
-                "orderBy": "startTime"
-            }
-        });
-    }
-
-    loadPrimaryCalendarEvents() {
-        return this.loadCalendarEvents("primary");
     }
 
     static convertEvents(eventsLoaded) {

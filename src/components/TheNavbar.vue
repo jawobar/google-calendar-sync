@@ -9,9 +9,9 @@
                     <b-button @click.prevent="signInOrOut" size="sm">{{ signingLabel }}</b-button>
                 </b-nav-form>
 
-                <b-nav-item-dropdown text="Lang" right>
-                    <b-dropdown-item @click="$i18n.locale = 'pl'">PL</b-dropdown-item>
-                    <b-dropdown-item @click="$i18n.locale = 'en'">EN</b-dropdown-item>
+                <b-nav-item-dropdown :text="$i18n.locale | uppercase" right>
+                    <b-dropdown-item @click="$i18n.locale = 'pl'">Polski - PL</b-dropdown-item>
+                    <b-dropdown-item @click="$i18n.locale = 'en'">English - EN</b-dropdown-item>
                 </b-nav-item-dropdown>
 
                 <b-nav-item-dropdown right>
@@ -43,6 +43,11 @@
                 } else {
                     this.$store.dispatch("signIn");
                 }
+            }
+        },
+        filters: {
+            uppercase(value) {
+                return value.toString().toUpperCase();
             }
         }
     }
