@@ -55,6 +55,17 @@ export default class GoogleWrapper {
         return this.loadCalendarEvents("primary");
     }
 
+    loadUserCalendars() {
+        return this.request({
+            path: "https://www.googleapis.com/calendar/v3/users/me/calendarList",
+            method: "GET",
+            params: {
+                "maxResults": 10,
+                "minAccessRole": "owner"
+            }
+        });
+    }
+
     async [_loadScript]() {
         if (window.gapi) {
             return window.gapi;

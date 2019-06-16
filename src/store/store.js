@@ -14,6 +14,7 @@ Vue.use(Vuex);
 export const store = new Vuex.Store({
     state: {
         calendarEvents: [],
+        userCalendars: [],
         userProfile: null
     },
     mutations: {
@@ -22,12 +23,16 @@ export const store = new Vuex.Store({
         },
         setCalendarEvents: (state, events) => {
             state.calendarEvents = events;
+        },
+        setUserCalendars(state, calendars) {
+            state.userCalendars = calendars;
         }
     },
     actions: {
         async signIn({ commit, dispatch }) {
             let userProfile = await gapi.signIn();
             commit("setUserProfile", userProfile);
+            dispatch("fetchUserCalendars");
             dispatch("fetchCalendarEvents");
         },
         async signOut({ commit }) {
@@ -38,6 +43,10 @@ export const store = new Vuex.Store({
         async fetchCalendarEvents({ commit }) {
             let events = await gapi.loadPrimaryCalendarEvents();
             commit("setCalendarEvents", GoogleWrapper.convertEvents(events.result.items));
+        },
+        async fetchUserCalendars({ commit }) {
+            let calendars = await gapi.loadUserCalendars();
+            commit("setUserCalendars", calendars.result.items);
         }
     }
 });

@@ -3,6 +3,7 @@
         <vue-cal class="vuecal--green-theme" style="height: 450px"
                  show-all-day-events="short"
                  events-on-month-view="short"
+                 today-button
                  :events="events" :locale="$i18n.locale">
         </vue-cal>
     </div>
