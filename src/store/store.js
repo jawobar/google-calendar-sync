@@ -15,24 +15,28 @@ export const store = new Vuex.Store({
     state: {
         calendarEvents: [],
         userCalendars: [],
+        subscribedCalendars: [],
         userProfile: null
     },
     mutations: {
-        setUserProfile: (state, userProfile) => {
+        setUserProfile(state, userProfile) {
             state.userProfile = userProfile;
         },
-        setCalendarEvents: (state, events) => {
+        setCalendarEvents(state, events) {
             state.calendarEvents = events;
         },
         setUserCalendars(state, calendars) {
             state.userCalendars = calendars;
+        },
+        setSubscribedCalendars(state, calendars) {
+            state.subscribedCalendars = calendars;
         }
     },
     actions: {
         async signIn({ commit, dispatch }) {
             let userProfile = await gapi.signIn();
             commit("setUserProfile", userProfile);
-            dispatch("fetchUserCalendars");
+            await dispatch("fetchUserCalendars");
             dispatch("fetchCalendarEvents");
         },
         async signOut({ commit }) {
@@ -40,13 +44,26 @@ export const store = new Vuex.Store({
             commit("setUserProfile", null);
             commit("setCalendarEvents", []);
         },
-        async fetchCalendarEvents({ commit }) {
-            let events = await gapi.loadPrimaryCalendarEvents();
-            commit("setCalendarEvents", GoogleWrapper.convertEvents(events.result.items));
+        async fetchCalendarEvents({ commit, state }) {
+            // let events = await gapi.loadPrimaryCalendarEvents();
+            let events = await Promise.all(state.subscribedCalendars.map(calendar => gapi.loadCalendarEvents(calendar)));
+            commit("setCalendarEvents", GoogleWrapper.convertEvents(events.flatMap(event => event.result.items)));
         },
-        async fetchUserCalendars({ commit }) {
+        async fetchUserCalendars({ commit, getters }) {
             let calendars = await gapi.loadUserCalendars();
             commit("setUserCalendars", calendars.result.items);
+
+            let primaryCalendar = getters.primaryCalendar;
+            commit("setSubscribedCalendars", [primaryCalendar.id]);
+        },
+        subscribeUserCalendars({ commit, dispatch }, calendars) {
+            commit("setSubscribedCalendars", calendars);
+            dispatch("fetchCalendarEvents");
+        }
+    },
+    getters: {
+        primaryCalendar: state => {
+            return state.userCalendars.find(calendar => calendar.primary);
         }
     }
 });

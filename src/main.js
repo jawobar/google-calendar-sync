@@ -1,16 +1,15 @@
 import Vue from "vue";
-import BootstrapVue from "bootstrap-vue"
+import Buefy from "buefy";
 import App from "./App.vue";
 
-import "bootstrap/dist/css/bootstrap.css"
-import "bootstrap-vue/dist/bootstrap-vue.css"
+import "buefy/dist/buefy.css"
 import i18n from './i18n'
 
 import { store } from "./store/store";
 
 Vue.config.productionTip = false;
 
-Vue.use(BootstrapVue);
+Vue.use(Buefy);
 
 new Vue({
     store,
